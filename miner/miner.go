@@ -1,14 +1,17 @@
 package main
-import ("net/rpc"
-	"flag"
-	"time"
-	"fmt"
-	"pairbroker/stubs"
-	"math/rand")
 
-func main(){
-	brokerAddr := flag.String("broker","127.0.0.1:8030", "Address of broker instance")
-	topic := flag.String("topic","multiply", "Topic this miner will publish to")
+import (
+	"flag"
+	"fmt"
+	"math/rand"
+	"net/rpc"
+	"pairbroker/stubs"
+	"time"
+)
+
+func main() {
+	brokerAddr := flag.String("broker", "127.0.0.1:8030", "Address of broker instance")
+	topic := flag.String("topic", "multiply", "Topic this miner will publish to")
 	flag.Parse()
 	//Dial broker address.
 	client, _ := rpc.Dial("tcp", *brokerAddr)
@@ -19,7 +22,7 @@ func main(){
 	rand.Seed(time.Now().UnixNano())
 	for {
 		//Create two new random integers
-		newpair := stubs.Pair{rand.Intn(999999999),rand.Intn(999999999)}
+		newpair := stubs.Pair{rand.Intn(999999999), rand.Intn(999999999)}
 		//Form a request to publish it in 'multiply'
 		towork := stubs.PublishRequest{Topic: *topic, Pair: newpair}
 		//Call the broker
@@ -30,6 +33,6 @@ func main(){
 			fmt.Println("Shutting down miner.")
 			break
 		}
-		time.Sleep(1*time.Second)
+		time.Sleep(5 * time.Second)
 	}
 }
